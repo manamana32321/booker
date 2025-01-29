@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     # "drf_yasg",
     "rest_framework",
     # "rest_framework_simplejwt",
+    "django_filters",
 ]
 AUTH_USER_MODEL = "auth.User"
 MIDDLEWARE = [
@@ -53,13 +54,13 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # "rest_framework_simplejwt.authentication.JWTAuthentication",
         # 'rest_framework_simplejwt.authentication.JWTStatelessUserAuthentication',     # DB 조회 없이 토큰에서 User 정보 참조하는 경우
     ),
     "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",  # 인증된 사용자만 접근
+        # "rest_framework.permissions.IsAuthenticated",  # 인증된 사용자만 접근
         # 'rest_framework.permissions.IsAdminUser', # 관리자만 접근
-        # "rest_framework.permissions.AllowAny",  # 누구나 접근
+        "rest_framework.permissions.AllowAny",  # 누구나 접근
     ),
 }
 
