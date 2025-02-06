@@ -16,7 +16,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "core",
-    # "drf_yasg",
+    "drf_yasg",
     "rest_framework",
     # "rest_framework_simplejwt",
     "django_filters",
