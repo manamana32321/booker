@@ -1,4 +1,3 @@
-from decimal import Decimal
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
@@ -25,7 +24,6 @@ class CalendarTests(APITestCase):
             username="user",
             password="userpassword",
         )
-        cls.normal_user.nickname = "user"
         cls.normal_user.save()
 
         cls.calendar = Calendar.objects.create(
@@ -36,14 +34,14 @@ class CalendarTests(APITestCase):
 
         # URL 설정
         cls.list_create_url = reverse("calendar-list_create")
-        cls.detail_url = reverse("calendar-retrieve_update_destroy", kwargs={"pk": str(cls.calendar.id)})
+        cls.retrieve_update_destroy_url = reverse("calendar-retrieve_update_destroy", kwargs={"pk": str(cls.calendar.id)})
 
     def setUp(self):
         self.client = APIClient()
         self.data = {
-            "name": "test calendar",
-            "owner": self.normal_user.id,
-            "description": "test description",
+            "name": "new calendar",
+            "ownerId": self.normal_user.id,
+            "description": "new description",
         }
 
 
@@ -57,3 +55,30 @@ class CalendarTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]["name"], "test calendar")
+
+    def test_create_calendar(self):
+        self.authenticate(self.normal_user)
+        response = self.client.post(self.list_create_url, self.data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Calendar.objects.count(), 2)
+        self.assertEqual(Calendar.objects.get(name="new calendar").description, "new description")
+
+    def test_retreive_calendar(self):
+        self.authenticate(self.normal_user)
+        response = self.client.get(self.retrieve_update_destroy_url, self.data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Calendar.objects.count(), 1)
+        self.assertEqual(Calendar.objects.get(name="test calendar").description, "test description")
+
+    def test_update_calendar(self):
+        self.authenticate(self.normal_user)
+        response = self.client.get(self.retrieve_update_destroy_url, self.data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Calendar.objects.count(), 1)
+        self.assertEqual(Calendar.objects.get(name="test calendar").description, "test description")
+
+    def test_delete_calendar(self):
+        self.authenticate(self.normal_user)
+        response = self.client.delete(self.retrieve_update_destroy_url, self.data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Calendar.objects.count(), 0)
